@@ -1,15 +1,15 @@
 import sys
 from PyQt6.QtWidgets import *
-from PyQt6.QtGui import *
+from PyQt6 import QtGui
 from PyQt6.QtCore import *
-#import serial
+import serial
 
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
 
         # Serial communication setup
-        # self.serial_port = serial.Serial('COM3', 9600, timeout=1)  # Update with the correct port
+        self.serial_port = serial.Serial('COM6', 9600, timeout=1)  # Update with the correct port
 
         # Setting title
         self.setWindowTitle("RP Adjust")
@@ -30,8 +30,7 @@ class Window(QMainWindow):
         label.setGeometry(100, 175, 75, 75)
         label.setWordWrap(True)
         dial.valueChanged.connect(lambda: self.update_label_and_send("Roll", dial.value()))
-        dial.valueChanged.connect(lambda: label.setText("Roll is: \n" +str(dial.value())+" Deg"))
-        
+        dial.valueChanged.connect(lambda: label.setText("Roll is: \n" + str(dial.value()) + " Deg"))
 
         dial2 = QDial(self)
         dial2.setGeometry(350, 50, 150, 150)
@@ -42,15 +41,15 @@ class Window(QMainWindow):
         label2.setGeometry(400, 175, 75, 75)
         label2.setWordWrap(True)
         dial2.valueChanged.connect(lambda: self.update_label_and_send("Pitch", dial2.value()))
-        dial2.valueChanged.connect(lambda: label.setText("Pitch is: \n" +str(dial2.value())+" Deg"))
+        dial2.valueChanged.connect(lambda: label2.setText("Pitch is: \n" + str(dial2.value()) + " Deg"))
 
     def update_label_and_send(self, parameter, value):
         label_text = f"{parameter} is:\n{value} Deg"
         label.setText(label_text)
 
-        #Send the parameter and value to Arduino
-        #message = f"{parameter}:{value}\n"
-        #self.serial_port.write(message.encode())
+        # Send the parameter and value to Arduino
+        message = f"{parameter}:{value}\n"
+        self.serial_port.write(message.encode())
 
 # Create the application and run it
 app = QApplication(sys.argv)
