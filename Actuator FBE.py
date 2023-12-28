@@ -1,44 +1,40 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget
 import serial
 
-class Window(QWidget):
+class Window(QMainWindow):
     def __init__(self):
         super().__init__()
 
         # Serial communication setup
-        #self.serial_port = serial.Serial('COM5', 9600)  # Update with the correct port
+        self.serial_port = serial.Serial('COM5', 9600)
 
-        # Setting title
-        self.setWindowTitle("Arduino Control")
-
-        # Setting geometry
+        self.setWindowTitle("Actuator Control")
         self.setGeometry(300, 300, 300, 150)
         self.UiComponents()
         self.show()
 
     def UiComponents(self):
-        layout = QVBoxLayout(self)
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
 
-        # Forward button
+        main_layout = QVBoxLayout(central_widget)
+
         forward_button = QPushButton("Forward", self)
-        forward_button.clicked.connect(lambda: self.send_command("forward"))
-        layout.addWidget(forward_button)
+        forward_button.clicked.connect(lambda: self.send_command_to_arduino('F'))
+        main_layout.addWidget(forward_button)
 
-        # Backward button
         backward_button = QPushButton("Backward", self)
-        backward_button.clicked.connect(lambda: self.send_command("backward"))
-        layout.addWidget(backward_button)
+        backward_button.clicked.connect(lambda: self.send_command_to_arduino('B'))
+        main_layout.addWidget(backward_button)
 
-        # Stop button
         stop_button = QPushButton("Stop", self)
-        stop_button.clicked.connect(lambda: self.send_command("stop"))
-        layout.addWidget(stop_button)
+        stop_button.clicked.connect(lambda: self.send_command_to_arduino('S'))
+        main_layout.addWidget(stop_button)
 
-    def send_command(self, command):
-        #Send the command to Arduino
-        arduino_command = f"{command}\n"
-        #self.serial_port.write(arduino_command.encode())
+    def send_command_to_arduino(self, command):
+        # Send the command to Arduino
+        self.serial_port.write(command.encode())
 
 # Create the application and run it
 app = QApplication(sys.argv)
